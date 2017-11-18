@@ -201,3 +201,20 @@ TEST_CASE("BinaryField::inv", "[arithmetic][BinaryField]") {
         REQUIRE(mpz_cmp_ui(r, 1) == 0);
     }
 }
+
+TEST_CASE("PADD", "[addition][Point]") {
+    mpz_t prime;
+    mpz_init_set_ui(prime, 127);
+    ff::PrimeField pf(prime);
+
+    ecc::Curve curve(-1, 3, pf);
+
+    ecc::Point p(curve);
+    p.setX("16", 10);
+    p.setY("20", 10);
+    ecc::Point q(curve);
+    q.setX("41", 10);
+    q.setY("120", 10);
+    ecc::Point r(curve);
+    r.add(p, q);
+}
