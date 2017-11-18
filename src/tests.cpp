@@ -276,6 +276,19 @@ TEST_CASE("Point Addition", "[addition][PrimeField][Point]") {
         ecs::Point r(curve);
         r.add(p, q);
 
+        ecs::NIST_P224 p224;
+        ecs::Point p1 = p224.newPoint();
+        ecs::Point p2 = p224.newPoint();
+        ecs::Point p3 = p224.newPoint();
+        p1.setX(p.x());
+        p1.setY(p.y());
+        p2.setX(q.x());
+        p2.setY(q.y());
+
+        p3.add(p1, p2);
+        REQUIRE(mpz_cmp(p3.x(), r.x()) == 0);
+        REQUIRE(mpz_cmp(p3.y(), r.y()) == 0);
+
         gmp_sprintf(buff, "a=%Zd, b=%Zd, p=%Zd:    (%Zd, %Zd) + (%Zd, %Zd):    expected (%Zd, %Zd), got (%Zd, %Zd)", 
             a, b, prime, p.x(), p.y(), q.x(), q.y(), xr, yr, r.x(), r.y()
         );

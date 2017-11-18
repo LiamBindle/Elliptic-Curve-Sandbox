@@ -4,6 +4,8 @@
 #include <utility>
 #include "finite_fields.hpp"
 
+#define NIST_CURVES
+
 namespace ecs {
 
     class Point;
@@ -51,6 +53,12 @@ namespace ecs {
         void setY(const char* v, int base) {
             mpz_set_str(_y, v, base);
         }
+        void setX(const mpz_t& x) {
+            mpz_set(_x, x);
+        }
+        void setY(const mpz_t& y) {
+            mpz_set(_y, y);
+        }
         const mpz_t& x() const { return _x; }
         const mpz_t& y() const { return _y; }
 
@@ -62,5 +70,9 @@ namespace ecs {
         const Curve& _curve;
     };
 }
+
+#ifdef NIST_CURVES
+    #include "nist-curves.hpp"
+#endif
 
 #endif
