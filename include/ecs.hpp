@@ -64,7 +64,7 @@ namespace ecs {
         const mpz_t& x() const { return _x; }
         const mpz_t& y() const { return _y; }
 
-        void add(const Point& p, const Point& q);
+        static void add(const Point& p, const Point& q, Point& r);
 
     protected:
         mpz_t _x;
