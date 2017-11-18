@@ -1,7 +1,11 @@
-#include <ecc.hpp>
+#include <ecs.hpp>
 
+ecs::Point ecs::Curve::newPoint() const {
+    ecs::Point pt(*this);
+    return pt;
+}
 
-void ecc::Point::add(const ecc::Point& p, const ecc::Point& q) {
+void ecs::Point::add(const ecs::Point& p, const ecs::Point& q) {
     mpz_t m, tmp;
     mpz_inits(m, tmp, NULL);
 
@@ -9,9 +13,9 @@ void ecc::Point::add(const ecc::Point& p, const ecc::Point& q) {
     const mpz_t& py = p.y();
     const mpz_t& qx = q.x();
     const mpz_t& qy = q.y();
-    const ff::Field& field = _curve.field();
+    const ecs::Field& field = _curve.field();
 
-    if(mpz_cmp(px, py) == 0 && mpz_cmp(px, py)) { // PDBL
+    if(mpz_cmp(px, qx) == 0 && mpz_cmp(py, qy) == 0) { // PDBL
         mpz_set_ui(tmp, 3);   // 3
         field.mul(px, px, m); // px*px
         field.mul(m, tmp, m); // 3 * px * px

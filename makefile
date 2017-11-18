@@ -26,12 +26,8 @@ dirs:
 	ar rcs $(LIB_DIR)/$@ $(addprefix $(LIB_DIR)/, $^)
 
 finite_fields.o: finite_fields.cpp
-ecc.o: ecc.o
-libecc.a: finite_fields.o ecc.o
+ecs.o: ecs.o
+libecs.a: finite_fields.o ecs.o
 
-bin/tests: src/tests.cpp libecc.a
-	$(CC) $(CFLAGS) src/tests.cpp $(LIBS) -lecc  -o $@
-
-
-
-
+bin/tests: src/tests.cpp libecs.a
+	$(CC) $(CFLAGS) src/tests.cpp $(LIBS) -lecs  -o $@

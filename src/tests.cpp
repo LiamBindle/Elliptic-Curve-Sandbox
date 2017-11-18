@@ -1,4 +1,4 @@
-#include <ecc.hpp>
+#include <ecs.hpp>
 
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
@@ -25,7 +25,7 @@ TEST_CASE("PrimeField::add", "[arithmetic][PrimeField]") {
     mpz_t a, b, r, c, p;
     mpz_inits(a, b, r, c, NULL);
     mpz_init_set_str(p, "6646849653589194694594999594911381090925744916469020540392321643359", 10);
-    ff::PrimeField pf(p);
+    ecs::PrimeField pf(p);
 
     for(int i = 0; i < tests.size();) {
         mpz_set_str(a, tests[i++].c_str(), 10);
@@ -63,7 +63,7 @@ TEST_CASE("PrimeField::sub", "[arithmetic][PrimeField]") {
 
     mpz_init_set_str(p, "6646849653589194694594999594911381090925744916469020540392321643359", 10);
 
-    ff::PrimeField pf(p);
+    ecs::PrimeField pf(p);
 
     for(int i = 0; i < tests.size();) {
         mpz_set_str(a, tests[i++].c_str(), 10);
@@ -102,7 +102,7 @@ TEST_CASE("PrimeField::mul", "[arithmetic][PrimeField]") {
 
     mpz_init_set_str(p, "6646849653589194694594999594911381090925744916469020540392321643359", 10);
 
-    ff::PrimeField pf(p);
+    ecs::PrimeField pf(p);
 
     for(int i = 0; i < tests.size();) {
         mpz_set_str(a, tests[i++].c_str(), 10);
@@ -138,7 +138,7 @@ TEST_CASE("PrimeField::inv", "[arithmetic][PrimeField]") {
         mpz_set_str(a, tests[i++].c_str(), 10);
         mpz_set_str(p, tests[i++].c_str(), 10);
         mpz_set_si(c, 1);
-        ff::PrimeField pf(p);
+        ecs::PrimeField pf(p);
         pf.inv(a, r);
         pf.mul(a, r, r);
         gmp_sprintf(buff, "%s/%s mod %s: expected 1, got %Zd", 
@@ -166,7 +166,7 @@ TEST_CASE("BinaryField::mul", "[arithmetic][BinaryField]") {
         mpz_set_str(b, tests[i++].c_str(), 2);
         mpz_set_str(ip, tests[i++].c_str(), 2);
         mpz_set_str(c, tests[i++].c_str(), 2);
-        ff::BinaryField bf(ip);
+        ecs::BinaryField bf(ip);
         bf.mul(a, b, r);
         gmp_sprintf(buff, "%s * %s mod %s: expected %s, got %Zd", 
             tests[i-4].c_str(), tests[i-3].c_str(), tests[i-2].c_str(), tests[i-1].c_str(), r
@@ -191,7 +191,7 @@ TEST_CASE("BinaryField::inv", "[arithmetic][BinaryField]") {
     for(int i = 0; i < tests.size();) {
         mpz_set_str(a, tests[i++].c_str(), 2);
         mpz_set_str(ip, tests[i++].c_str(), 2);
-        ff::BinaryField bf(ip);
+        ecs::BinaryField bf(ip);
         bf.inv(a, r);
         bf.mul(a, r, r);
         gmp_sprintf(buff, "%s / %s mod %s: expected 1, got %Zd", 
@@ -208,7 +208,7 @@ TEST_CASE("PADD", "[addition][PrimeField][Point]") {
         "-1", "3", "127", // a, b, p
         "16", "20",  // = P
         "41", "120", // = Q
-        "86", "81"   // = R
+        "86", "81",  // = R
     };
 
     for(int i = 0; i < tests.size();) {
@@ -216,20 +216,64 @@ TEST_CASE("PADD", "[addition][PrimeField][Point]") {
         mpz_init_set_str(a, tests[i++].c_str(), 10);
         mpz_init_set_str(b, tests[i++].c_str(), 10);
         mpz_init_set_str(prime, tests[i++].c_str(), 10);
-        ff::PrimeField pf(prime);
-        ecc::Curve curve(a, b, pf);
+        ecs::PrimeField pf(prime);
+        ecs::Curve curve(a, b, pf);
 
-        ecc::Point p(curve);
+        ecs::Point p(curve);
         p.setX(tests[i++].c_str(), 10);
         p.setY(tests[i++].c_str(), 10);
-        ecc::Point q(curve);
+        ecs::Point q(curve);
         q.setX(tests[i++].c_str(), 10);
         q.setY(tests[i++].c_str(), 10);
         
         mpz_init_set_str(xr, tests[i++].c_str(), 10);
         mpz_init_set_str(yr, tests[i++].c_str(), 10);
         
-        ecc::Point r(curve);
+        ecs::Point r(curve);
+        r.add(p, q);
+
+        gmp_sprintf(buff, "a=%Zd, b=%Zd, p=%Zd:    (%Zd, %Zd) + (%Zd, %Zd):    expected (%Zd, %Zd), got (%Zd, %Zd)", 
+            a, b, prime, p.x(), p.y(), q.x(), q.y(), xr, yr, r.x(), r.y()
+        );
+        INFO(buff);
+        REQUIRE(mpz_cmp(r.x(), xr) == 0);
+        REQUIRE(mpz_cmp(r.y(), yr) == 0);
+    }
+}
+
+TEST_CASE("Point Addition", "[addition][PrimeField][Point]") {
+    char buff[4096];
+    std::vector<std::string> tests = {
+        "-3", "18958286285566608000408668544493926415504680968679321075787234672564", "26959946667150639794667015087019630673557916260026308143510066298881", // a, b, p
+        "19277929113566293071110308034699488026831934219452440156649784352033", "19926808758034470970197974370888749184205991990603949537637343198772",  // = P
+        "19277929113566293071110308034699488026831934219452440156649784352033", "19926808758034470970197974370888749184205991990603949537637343198772",  // = Q
+        "11838696407187388799350957250141035264678915751356546206913969278886", "2966624012289393637077209076615926844583158638456025172915528198331",   // = R
+
+        "-3", "18958286285566608000408668544493926415504680968679321075787234672564", "26959946667150639794667015087019630673557916260026308143510066298881", // a, b, p
+        "19277929113566293071110308034699488026831934219452440156649784352033", "19926808758034470970197974370888749184205991990603949537637343198772",  // = P
+        "11838696407187388799350957250141035264678915751356546206913969278886", "2966624012289393637077209076615926844583158638456025172915528198331",  // = Q
+        "23495795443371455911734272815198443231796705177085412225858576936196", "17267899494408073472134592504239670969838724875111952463975956982053"    // = R
+    };
+
+    for(int i = 0; i < tests.size();) {
+        mpz_t a, b, prime, xr, yr;
+        mpz_init_set_str(a, tests[i++].c_str(), 10);
+        mpz_init_set_str(b, tests[i++].c_str(), 10);
+        mpz_init_set_str(prime, tests[i++].c_str(), 10);
+        ecs::PrimeField pf(prime);
+        ecs::Curve curve(a, b, pf);
+
+        ecs::Point p(curve);
+        p.setX(tests[i++].c_str(), 10);
+        p.setY(tests[i++].c_str(), 10);
+        ecs::Point q(curve);
+        q.setX(tests[i++].c_str(), 10);
+        q.setY(tests[i++].c_str(), 10);
+        
+        mpz_init_set_str(xr, tests[i++].c_str(), 10);
+        mpz_init_set_str(yr, tests[i++].c_str(), 10);
+        
+        ecs::Point r(curve);
         r.add(p, q);
 
         gmp_sprintf(buff, "a=%Zd, b=%Zd, p=%Zd:    (%Zd, %Zd) + (%Zd, %Zd):    expected (%Zd, %Zd), got (%Zd, %Zd)", 

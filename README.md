@@ -1,4 +1,2 @@
-
-
 Dependencies:
     g++ libgmp-dev

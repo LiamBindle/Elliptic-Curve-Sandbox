@@ -1,20 +1,39 @@
+#ifndef __ECS_H__
+#define __ECS_H__
+
+#include <utility>
 #include "finite_fields.hpp"
 
-namespace ecc {
+namespace ecs {
+
+    class Point;
 
     class Curve {
     public:
-        Curve(mpz_t a, mpz_t b, const ff::Field& field) : _field(field) {
+        Curve(mpz_t a, mpz_t b, const ecs::Field& field) : Curve(a, b, &field) {}
+        Curve(mpz_t a, mpz_t b, const ecs::Field* field) {
+            _field = field;
             mpz_init_set(_a, a);
             mpz_init_set(_b, b);
         }
+        Curve(const char* a, int base_a, 
+              const char* b, int base_b, 
+              const ecs::Field* field)
+        {
+            _field = field;
+            mpz_init_set_str(_a, a, base_a);
+            mpz_init_set_str(_b, b, base_b);    
+        }
         const mpz_t& a() const { return _a; }
         const mpz_t& b() const { return _b; }
-        const ff::Field& field() const { return _field; }
+        const ecs::Field& field() const { return *_field; }
+
+        Point newPoint() const;
+
     protected:
         mpz_t _a;
         mpz_t _b;
-        const ff::Field& _field;        
+        const ecs::Field* _field;        
     };
 
 
@@ -22,6 +41,8 @@ namespace ecc {
     public:
         Point(const Curve& curve): _curve(curve) {
             mpz_inits(_x, _y, NULL);
+        }
+        Point(Point&& point) : _curve(point._curve), _x(point._x), _y(point._y) {
         }
 
         void setX(const char* v, int base) {
@@ -42,3 +63,4 @@ namespace ecc {
     };
 }
 
+#endif

@@ -1,34 +1,34 @@
 #include <finite_fields.hpp>
 #include <iostream>
 
-void ff::PrimeField::add(const mpz_t op1, const mpz_t op2, mpz_t result) const {
+void ecs::PrimeField::add(const mpz_t op1, const mpz_t op2, mpz_t result) const {
     mpz_add(result, op1, op2);
     mpz_mod(result, result, p);
 }
 
-void ff::PrimeField::sub(const mpz_t op1, const mpz_t op2, mpz_t result) const {
+void ecs::PrimeField::sub(const mpz_t op1, const mpz_t op2, mpz_t result) const {
     mpz_sub(result, op1, op2);
     mpz_mod(result, result, p);
 }
 
-void ff::PrimeField::mul(const mpz_t op1, const mpz_t op2, mpz_t result) const {
+void ecs::PrimeField::mul(const mpz_t op1, const mpz_t op2, mpz_t result) const {
     mpz_mul(result, op1, op2);
     mpz_mod(result, result, p);
 }
 
-void ff::PrimeField::inv(const mpz_t op1, mpz_t result) const {
+void ecs::PrimeField::inv(const mpz_t op1, mpz_t result) const {
     mpz_invert(result, op1, p);
 }
 
-void ff::BinaryField::add(const mpz_t op1, const mpz_t op2, mpz_t result) const {
+void ecs::BinaryField::add(const mpz_t op1, const mpz_t op2, mpz_t result) const {
     mpz_xor(result, op1, op2);
 }
 
-void ff::BinaryField::sub(const mpz_t op1, const mpz_t op2, mpz_t result) const {
+void ecs::BinaryField::sub(const mpz_t op1, const mpz_t op2, mpz_t result) const {
     mpz_xor(result, op1, op2);
 }
 
-void ff::BinaryField::mul(const mpz_t op1, const mpz_t op2, mpz_t result) const {
+void ecs::BinaryField::mul(const mpz_t op1, const mpz_t op2, mpz_t result) const {
     // right-to-left comba algorithm (naive)
 
     mpz_t b;
@@ -52,7 +52,7 @@ void ff::BinaryField::mul(const mpz_t op1, const mpz_t op2, mpz_t result) const 
     }
 }
 
-void ff::BinaryField::inv(const mpz_t op1, mpz_t result) const {
+void ecs::BinaryField::inv(const mpz_t op1, mpz_t result) const {
     // extended euclidean algorithm
 
     mpz_t u, v, tu, tv, g1, g2, tmp;
