@@ -144,3 +144,52 @@ TEST_CASE("PrimeField::inv, PrimeField::red", "[arithmetic][PrimeField]") {
         REQUIRE(mpz_cmp(r, c) == 0);
     }
 }
+
+
+
+/*TEST_CASE("BinaryField::mul", "[arithmetic][BinaryField]") {
+    char buff[4096];
+    
+    mpz_t a, b, r, c, p;
+    mpz_init_set_str(a, "10101", 2);
+    mpz_init_set_str(b, "01101", 2);
+    mpz_init_set_str(p, "100101", 2);
+    mpz_init(r);
+
+    ff::BinaryField bf(p);
+    bf.mul(a, b, r);
+
+    mpz_out_str(0, 2, a);
+    std::cout<<" * ";
+    mpz_out_str(0, 2, b);
+    std::cout<<" = ";
+    mpz_out_str(0, 2, r);
+    std::cout <<"\n";
+}*/
+
+TEST_CASE("BinaryField::mul", "[arithmetic][BinaryField]") {
+    char buff[4096];
+    std::vector<std::string> tests = {
+        "10101", "01101", "100101", "10010",
+        "01101", "10101", "100101", "10010",
+        "01010011", "11001010", "100011011", "00000001",
+        "11001010", "01010011", "100011011", "00000001"
+    };
+    
+    mpz_t a, b, ip, r, c;
+    mpz_inits(a, b, ip, r, c, NULL);
+
+    for(int i = 0; i < tests.size();) {
+        mpz_set_str(a, tests[i++].c_str(), 2);
+        mpz_set_str(b, tests[i++].c_str(), 2);
+        mpz_set_str(ip, tests[i++].c_str(), 2);
+        mpz_set_str(c, tests[i++].c_str(), 2);
+        ff::BinaryField bf(ip);
+        bf.mul(a, b, r);
+        gmp_sprintf(buff, "%s * %s mod %s: expected %s, got %Zd", 
+            tests[i-4].c_str(), tests[i-3].c_str(), tests[i-2].c_str(), tests[i-1].c_str(), r
+        );
+        INFO(buff);
+        REQUIRE(mpz_cmp(r, c) == 0);
+    }
+}
