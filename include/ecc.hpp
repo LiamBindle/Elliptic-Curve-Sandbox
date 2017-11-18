@@ -4,9 +4,9 @@ namespace ecc {
 
     class Curve {
     public:
-        Curve(int a, int b, const ff::Field& field) : _field(field) {
-            mpz_init_set_si(_a, a);
-            mpz_init_set_si(_b, b);
+        Curve(mpz_t a, mpz_t b, const ff::Field& field) : _field(field) {
+            mpz_init_set(_a, a);
+            mpz_init_set(_b, b);
         }
         const mpz_t& a() const { return _a; }
         const mpz_t& b() const { return _b; }

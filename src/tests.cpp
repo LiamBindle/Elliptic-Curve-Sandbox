@@ -202,19 +202,41 @@ TEST_CASE("BinaryField::inv", "[arithmetic][BinaryField]") {
     }
 }
 
-TEST_CASE("PADD", "[addition][Point]") {
-    mpz_t prime;
-    mpz_init_set_ui(prime, 127);
-    ff::PrimeField pf(prime);
+TEST_CASE("PADD", "[addition][PrimeField][Point]") {
+    char buff[4096];
+    std::vector<std::string> tests = {
+        "-1", "3", "127", // a, b, p
+        "16", "20",  // = P
+        "41", "120", // = Q
+        "86", "81"   // = R
+    };
 
-    ecc::Curve curve(-1, 3, pf);
+    for(int i = 0; i < tests.size();) {
+        mpz_t a, b, prime, xr, yr;
+        mpz_init_set_str(a, tests[i++].c_str(), 10);
+        mpz_init_set_str(b, tests[i++].c_str(), 10);
+        mpz_init_set_str(prime, tests[i++].c_str(), 10);
+        ff::PrimeField pf(prime);
+        ecc::Curve curve(a, b, pf);
 
-    ecc::Point p(curve);
-    p.setX("16", 10);
-    p.setY("20", 10);
-    ecc::Point q(curve);
-    q.setX("41", 10);
-    q.setY("120", 10);
-    ecc::Point r(curve);
-    r.add(p, q);
+        ecc::Point p(curve);
+        p.setX(tests[i++].c_str(), 10);
+        p.setY(tests[i++].c_str(), 10);
+        ecc::Point q(curve);
+        q.setX(tests[i++].c_str(), 10);
+        q.setY(tests[i++].c_str(), 10);
+        
+        mpz_init_set_str(xr, tests[i++].c_str(), 10);
+        mpz_init_set_str(yr, tests[i++].c_str(), 10);
+        
+        ecc::Point r(curve);
+        r.add(p, q);
+
+        gmp_sprintf(buff, "a=%Zd, b=%Zd, p=%Zd:    (%Zd, %Zd) + (%Zd, %Zd):    expected (%Zd, %Zd), got (%Zd, %Zd)", 
+            a, b, prime, p.x(), p.y(), q.x(), q.y(), xr, yr, r.x(), r.y()
+        );
+        INFO(buff);
+        REQUIRE(mpz_cmp(r.x(), xr) == 0);
+        REQUIRE(mpz_cmp(r.y(), yr) == 0);
+    }
 }
