@@ -2,7 +2,9 @@
 #define __ECS_H__
 
 #include <utility>
-#include "finite_fields.hpp"
+#include <finite_fields.hpp>
+#include <prime_field.hpp>
+#include <binary_field.hpp>
 
 #define NIST_CURVES
 
@@ -72,7 +74,7 @@ namespace ecs {
 }
 
 #ifdef NIST_CURVES
-    #include "nist-curves.hpp"
+    #include "nist_curves.hpp"
 #endif
 
 #endif

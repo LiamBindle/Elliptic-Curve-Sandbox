@@ -25,9 +25,11 @@ dirs:
 %.a:
 	ar rcs $(LIB_DIR)/$@ $(addprefix $(LIB_DIR)/, $^)
 
-finite_fields.o: finite_fields.cpp
+binary_field.o: binary_field.cpp
+prime_field.o: prime_field.cpp
+nist_curves.o: nist_curves.cpp
 ecs.o: ecs.o
-libecs.a: finite_fields.o ecs.o
+libecs.a: binary_field.o prime_field.o nist_curves.o ecs.o
 
 bin/tests: src/tests.cpp libecs.a
 	$(CC) $(CFLAGS) src/tests.cpp $(LIBS) -lecs  -o $@
