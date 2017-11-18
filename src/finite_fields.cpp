@@ -29,6 +29,8 @@ void ff::BinaryField::sub(const mpz_t op1, const mpz_t op2, mpz_t result) {
 }
 
 void ff::BinaryField::mul(const mpz_t op1, const mpz_t op2, mpz_t result) {
+    // right-to-left comba algorithm (naive)
+
     mpz_t b;
     mpz_init2(b, nbits);
     mpz_set(b, op2);
@@ -51,6 +53,8 @@ void ff::BinaryField::mul(const mpz_t op1, const mpz_t op2, mpz_t result) {
 }
 
 void ff::BinaryField::inv(const mpz_t op1, mpz_t result) {
+    // extended euclidean algorithm
+
     mpz_t u, v, tu, tv, g1, g2, tmp;
     int deg_u, deg_v;
     mpz_init(tmp);
@@ -64,7 +68,7 @@ void ff::BinaryField::inv(const mpz_t op1, mpz_t result) {
     do {
         mpz_set(tu, u);
         mpz_set(tv, v);
-        for(deg_u = 0; mpz_cmp_ui(tu, 0) > 0; mpz_fdiv_q_2exp(tu, tu, 1), ++deg_u);
+        for(deg_u = 0; mpz_cmp_ui(tu, 0) > 0; mpz_fdiv_q_2exp(tu, tu, 1), ++deg_u); // determine polynomial degree
         for(deg_v = 0; mpz_cmp_ui(tv, 0) > 0; mpz_tdiv_q_2exp(tv, tv, 1), ++deg_v);
         int j = deg_u - deg_v;
         if(j < 0) {

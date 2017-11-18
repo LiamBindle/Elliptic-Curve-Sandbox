@@ -149,28 +149,6 @@ TEST_CASE("PrimeField::inv", "[arithmetic][PrimeField]") {
     }
 }
 
-
-
-/*TEST_CASE("BinaryField::mul", "[arithmetic][BinaryField]") {
-    char buff[4096];
-    
-    mpz_t a, b, r, c, p;
-    mpz_init_set_str(a, "10101", 2);
-    mpz_init_set_str(b, "01101", 2);
-    mpz_init_set_str(p, "100101", 2);
-    mpz_init(r);
-
-    ff::BinaryField bf(p);
-    bf.mul(a, b, r);
-
-    mpz_out_str(0, 2, a);
-    std::cout<<" * ";
-    mpz_out_str(0, 2, b);
-    std::cout<<" = ";
-    mpz_out_str(0, 2, r);
-    std::cout <<"\n";
-}*/
-
 TEST_CASE("BinaryField::mul", "[arithmetic][BinaryField]") {
     char buff[4096];
     std::vector<std::string> tests = {
