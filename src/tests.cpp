@@ -297,3 +297,38 @@ TEST_CASE("Point Addition", "[addition][PrimeField][Point]") {
         REQUIRE(mpz_cmp(r.y(), yr) == 0);
     }
 }
+
+TEST_CASE("Point Multiply", "[multiply][PrimeField][Point]") {
+    char buff[4096];
+    std::vector<std::string> tests = {
+        "-3", "18958286285566608000408668544493926415504680968679321075787234672564", "26959946667150639794667015087019630673557916260026308143510066298881", // a, b, p
+        "19277929113566293071110308034699488026831934219452440156649784352033", "19926808758034470970197974370888749184205991990603949537637343198772",  // = P
+        "6750511176099897363938386274242336557142404279175524369360114982138", "16931502898928025598759130516069973739949508516421542049725794966533",   // = R
+    };
+
+    for(int i = 0; i < tests.size();) {
+        mpz_t a, b, prime, xr, yr, k;
+        mpz_init_set_str(k, "46321756123", 10);
+        mpz_init_set_str(a, tests[i++].c_str(), 10);
+        mpz_init_set_str(b, tests[i++].c_str(), 10);
+        mpz_init_set_str(prime, tests[i++].c_str(), 10);
+        ecs::PrimeField pf(prime);
+        ecs::Curve curve(a, b, pf);
+
+        ecs::Point p(curve);
+        p.setX(tests[i++].c_str(), 10);
+        p.setY(tests[i++].c_str(), 10);
+        mpz_init_set_str(xr, tests[i++].c_str(), 10);
+        mpz_init_set_str(yr, tests[i++].c_str(), 10);
+        
+        ecs::Point r(curve);
+        ecs::Point::mul(k, p, r);
+
+        gmp_sprintf(buff, "a=%Zd, b=%Zd, p=%Zd:   %Zd * (%Zd, %Zd):    expected (%Zd, %Zd), got (%Zd, %Zd)", 
+            a, b, prime, k, p.x(), p.y(), xr, yr, r.x(), r.y()
+        );
+        INFO(buff);
+        REQUIRE(mpz_cmp(r.x(), xr) == 0);
+        REQUIRE(mpz_cmp(r.y(), yr) == 0);
+    }
+}

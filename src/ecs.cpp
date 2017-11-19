@@ -45,3 +45,31 @@ void ecs::Point::add(const ecs::Point& p, const ecs::Point& q, ecs::Point& r) {
     mpz_set(r._x, rx);
     mpz_set(r._y, ry);
 }
+
+
+void ecs::Point::mul(const mpz_t k_times, const ecs::Point& p, ecs::Point& r) {
+    using namespace ecs;
+    mpz_t k;
+    mpz_init_set(k, k_times);
+    Point dbl = p;
+
+    // while first bit isn't 1
+    while(!mpz_tstbit(k, 0) && mpz_cmp_ui(k, 0) > 0) {
+        Point::add(dbl, dbl, dbl);
+        mpz_fdiv_q_2exp(k, k, 1);
+    }
+    Point acc = dbl;
+    mpz_fdiv_q_2exp(k, k, 1);
+
+    while(mpz_cmp_ui(k, 0) > 0) {
+        Point::add(dbl, dbl, dbl);
+
+        if(mpz_tstbit(k, 0)) {
+            Point::add(acc, dbl, acc);
+        }
+        mpz_fdiv_q_2exp(k, k, 1);
+    }
+
+    mpz_set(r._x, acc._x);
+    mpz_set(r._y, acc._y);
+}

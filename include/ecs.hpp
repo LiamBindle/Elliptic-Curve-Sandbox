@@ -46,8 +46,13 @@ namespace ecs {
         Point(const Curve& curve): _curve(curve) {
             mpz_inits(_x, _y, NULL);
         }
+        Point(const Point& copy) : _curve(copy._curve) {
+            mpz_init_set(_x, copy._x);
+            mpz_init_set(_y, copy._y);
+        }
         Point(Point&& point) : _curve(point._curve), _x(point._x), _y(point._y) {
         }
+
 
         void setX(const char* v, int base) {
             mpz_set_str(_x, v, base);
@@ -65,6 +70,7 @@ namespace ecs {
         const mpz_t& y() const { return _y; }
 
         static void add(const Point& p, const Point& q, Point& r);
+        static void mul(const mpz_t k, const Point& p, Point& r);
 
     protected:
         mpz_t _x;
