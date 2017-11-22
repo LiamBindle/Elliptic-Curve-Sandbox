@@ -5,7 +5,7 @@
 
 namespace ecs {
 
-    class NIST_P224 : public ecs::Curve {
+    class NIST_P224 : public ecs::PrimeCurve {
     public:
         NIST_P224();
         ~NIST_P224() {
@@ -15,7 +15,7 @@ namespace ecs {
         mpz_t _prime_modulus;     
     };
 
-    class NIST_P256 : public ecs::Curve {
+    class NIST_P256 : public ecs::PrimeCurve {
     public:
         NIST_P256();
         ~NIST_P256() {
@@ -25,7 +25,7 @@ namespace ecs {
         mpz_t _prime_modulus;     
     };
 
-    class NIST_P384 : public ecs::Curve {
+    class NIST_P384 : public ecs::PrimeCurve {
     public:
         NIST_P384();
         ~NIST_P384() {
