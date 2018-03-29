@@ -46,7 +46,7 @@ void ecs::PrimeCurve::add(const ecs::Point& p, const ecs::Point& q, ecs::Point& 
 }
 
 
-void ecs::PrimeCurve::mul(const mpz_t k_times, const ecs::Point& p, ecs::Point& r) const {
+void ecs::Curve::mul(const mpz_t k_times, const ecs::Point& p, ecs::Point& r) const {
     using namespace ecs;
     mpz_t k;
     mpz_init_set(k, k_times);
@@ -71,4 +71,45 @@ void ecs::PrimeCurve::mul(const mpz_t k_times, const ecs::Point& p, ecs::Point& 
 
     r.setX(acc.x());
     r.setY(acc.y());
+}
+
+
+void ecs::BinaryCurve::add(const ecs::Point& p, const ecs::Point& q, ecs::Point& r) const {
+    mpz_t m, tmp, tmp2, rx, ry;
+    mpz_inits(m, tmp, tmp2, rx, ry, NULL);
+
+    const mpz_t& px = p.x();
+    const mpz_t& py = p.y();
+    const mpz_t& qx = q.x();
+    const mpz_t& qy = q.y();
+
+    if(mpz_cmp(px, qx) == 0 && mpz_cmp(py, qy) == 0) { // PDBL
+        _field->mul(px, px, m); // px*px
+        _field->add(m, py, m);   // px*px + py -> m
+
+        _field->inv(px, tmp);        // 1 / (px)
+
+        _field->mul(m, tmp, m);
+    } else { // PADD
+        _field->add(py, qy, m);   // yp - yq
+        _field->add(px, qx, tmp); // xp - xq
+        _field->inv(tmp, tmp);    // 1 / (xp - xq)
+
+        _field->mul(m, tmp, m);
+    }
+
+    _field->mul(m, m, tmp);
+    _field->add(tmp, m, tmp);
+    mpz_set_ui(tmp2, 1);
+    _field->add(tmp, tmp2, tmp);
+    _field->add(tmp, px, tmp);
+    _field->add(tmp, qx, rx);
+
+    _field->add(px, rx, tmp);
+    _field->mul(m, tmp, tmp);
+    _field->add(tmp, py, tmp);
+    _field->add(tmp, rx, ry);
+
+    r.setX(rx);
+    r.setY(ry);
 }

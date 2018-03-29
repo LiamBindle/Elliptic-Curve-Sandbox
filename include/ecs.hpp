@@ -35,7 +35,7 @@ namespace ecs {
         Point newPoint() const;
 
         virtual void add(const Point& p, const Point& q, Point& r) const = 0;
-        virtual void mul(const mpz_t k, const Point& p, Point& r) const = 0;
+        virtual void mul(const mpz_t k, const Point& p, Point& r) const;
 
     protected:
         mpz_t _a;
@@ -47,7 +47,12 @@ namespace ecs {
     public:
         using Curve::Curve;
         virtual void add(const Point& p, const Point& q, Point& r) const override;
-        virtual void mul(const mpz_t k, const Point& p, Point& r) const override;
+    };
+
+    class BinaryCurve: public Curve {
+    public:
+        using Curve::Curve;
+        virtual void add(const Point& p, const Point& q, Point& r) const override;
     };
 
 
