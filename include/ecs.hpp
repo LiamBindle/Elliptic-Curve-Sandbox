@@ -34,23 +34,38 @@ namespace ecs {
 
         Point newPoint() const;
 
+        virtual void add(const Point& p, const Point& q, Point& r) const = 0;
+        virtual void mul(const mpz_t k, const Point& p, Point& r) const;
+
     protected:
         mpz_t _a;
         mpz_t _b;
         const ecs::Field* _field;        
     };
 
+    class PrimeCurve: public Curve {
+    public:
+        using Curve::Curve;
+        virtual void add(const Point& p, const Point& q, Point& r) const override;
+    };
+
+    class BinaryCurve: public Curve {
+    public:
+        using Curve::Curve;
+        virtual void add(const Point& p, const Point& q, Point& r) const override;
+    };
+
 
     class Point {
     public:
-        Point(const Curve& curve): _curve(curve) {
+        Point(const Curve& curve) {
             mpz_inits(_x, _y, NULL);
         }
-        Point(const Point& copy) : _curve(copy._curve) {
+        Point(const Point& copy) {
             mpz_init_set(_x, copy._x);
             mpz_init_set(_y, copy._y);
         }
-        Point(Point&& point) : _curve(point._curve), _x(point._x), _y(point._y) {
+        Point(Point&& point) : _x(point._x), _y(point._y) {
         }
 
 
@@ -69,13 +84,9 @@ namespace ecs {
         const mpz_t& x() const { return _x; }
         const mpz_t& y() const { return _y; }
 
-        static void add(const Point& p, const Point& q, Point& r);
-        static void mul(const mpz_t k, const Point& p, Point& r);
-
     protected:
         mpz_t _x;
         mpz_t _y;
-        const Curve& _curve;
     };
 }
 
